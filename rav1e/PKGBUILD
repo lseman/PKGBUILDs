@@ -44,6 +44,7 @@ prepare() {
 
 build() {
   export MALLOC_CONF="thp:always,metadata_thp:always"
+  
   cd $srcdir/${pkgname}
   cargo pgo build -- --manifest-path Cargo.toml --frozen \
     --no-default-features \

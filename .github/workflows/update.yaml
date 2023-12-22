@@ -25,13 +25,25 @@ jobs:
           # Use GitHub API to get the latest release
           latest_release=$(curl -s "https://api.github.com/repos/$owner_repo/releases/latest" | grep -oP '"tag_name": "\K(.*)(?=")')
 
-          echo "Latest Release: $latest_release"
+          # Remove leading 'v' if present
+          latest_release_formatted=$(echo $latest_release | sed 's/^v//')
+
+          echo "Latest Release (formatted): $latest_release_formatted"
 
           # Check if the current release is different from the latest release
-          if [ "$current_release" != "$latest_release" ]; then
+          if [ "$current_release" != "$latest_release_formatted" ]; then
             echo "Updating .cachy file with latest release"
-            sed -i "s/release=$current_release/release=$latest_release/" "$cachy"
+            sed -i "s/release=$current_release/release=$latest_release_formatted/" "$cachy"
             git add "$cachy"
+
+            # Check for PKGBUILD file in the same directory
+            pkgbuild_file="$(dirname "$cachy")/PKGBUILD"
+            if [ -f "$pkgbuild_file" ]; then
+              echo "Updating PKGBUILD file with latest release and resetting pkgrel to 1"
+              sed -i "s/pkgver=$current_release/pkgver=$latest_release_formatted/" "$pkgbuild_file"
+              sed -i "s/pkgrel=.*/pkgrel=1/" "$pkgbuild_file"
+              git add "$pkgbuild_file"
+            fi
           fi
           echo "-----------------------------------"
         done

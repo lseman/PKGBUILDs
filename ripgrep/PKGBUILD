@@ -24,6 +24,7 @@ prepare() {
 
 build() {
   cd "$pkgname-$pkgver"
+  export MALLOC_CONF="thp:always,metadata_thp:always"
 
   cargo pgo build -- --features 'pcre2'
   wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.8.tar.xz

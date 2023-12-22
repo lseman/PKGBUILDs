@@ -24,6 +24,9 @@ prepare() {
 }
 
 build () {
+
+  export MALLOC_CONF="thp:always,metadata_thp:always"
+  
   cd "$srcdir/$pkgname-$pkgver"
 
   if pacman -T pacman-git > /dev/null; then

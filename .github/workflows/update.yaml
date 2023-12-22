@@ -1,0 +1,44 @@
+name: Update Cachy Files with Latest Releases
+
+on: [push, pull_request]
+
+jobs:
+  update-cachy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Find .cachy Files, Check and Update Latest Release
+      run: |
+        find . -name '.cachy' | while read cachy; do
+          echo "Processing $cachy"
+          url=$(grep -oP 'url=\K.*' "$cachy")
+          current_release=$(grep -oP 'release=\K.*' "$cachy")
+          echo "Configured URL: $url"
+          echo "Current Release: $current_release"
+
+          # Extract owner and repo from URL
+          owner_repo=$(echo $url | sed -n 's|.*github.com/\(.*\)\.git|\1|p')
+
+          # Use GitHub API to get the latest release
+          latest_release=$(curl -s "https://api.github.com/repos/$owner_repo/releases/latest" | grep -oP '"tag_name": "\K(.*)(?=")')
+
+          echo "Latest Release: $latest_release"
+
+          # Check if the current release is different from the latest release
+          if [ "$current_release" != "$latest_release" ]; then
+            echo "Updating .cachy file with latest release"
+            sed -i "s/release=$current_release/release=$latest_release/" "$cachy"
+            git add "$cachy"
+          fi
+          echo "-----------------------------------"
+        done
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        commit-message: update .cachy files with latest releases
+        title: Update Packages with Latest Releases
+        branch: main

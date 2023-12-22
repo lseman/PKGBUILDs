@@ -1,21 +1,26 @@
 # Maintainer: Morgan <morganamilo@archlinux.org>
+# PGO Version: Laio Seman <laio@ieee.org>
+
 pkgname=paru
 pkgver=2.0.1
 pkgrel=2
 pkgdesc='Feature packed AUR helper'
 url='https://github.com/morganamilo/paru'
-source=("$pkgname-$pkgver.tar.gz::https://github.com/Morganamilo/paru/archive/v$pkgver.tar.gz")
+source=($pkgname-$pkgver.tar.gz::https://github.com/Morganamilo/paru/archive/v$pkgver.tar.gz
+      optimize.patch)
 backup=("etc/paru.conf")
 arch=('i686' 'pentium4' 'x86_64' 'arm' 'armv7h' 'armv6h' 'aarch64')
 license=('GPL3')
 makedepends=('cargo')
 depends=('git' 'pacman')
 optdepends=('bat: colored pkgbuild printing' 'devtools: build in chroot and downloading pkgbuilds')
-sha256sums=('47cae94d227cc08f86706408d234444af6dda192ba24309c251a0b43a8aa7980')
+sha256sums=('47cae94d227cc08f86706408d234444af6dda192ba24309c251a0b43a8aa7980'
+            'f1b37082982412bf5f4449e28e8500665108c8969581c29c1b456145237684d7')
 
 prepare() {
   cd "$pkgname-$pkgver"
   cargo fetch --locked --target "$(rustc -vV | sed -n 's|host: ||p')"
+  patch -p1 -i ../optimize.patch
 }
 
 build () {
@@ -23,10 +28,6 @@ build () {
 
   if pacman -T pacman-git > /dev/null; then
     _features+="git,"
-  fi
-
-  if [[ $CARCH != x86_64 ]]; then
-    export CARGO_PROFILE_RELEASE_LTO=off
   fi
 
   cargo pgo build -- --frozen --features "${_features:-}" --target-dir target
@@ -39,7 +40,7 @@ build () {
 package() {
   cd "$srcdir/$pkgname-$pkgver"
 
-  install -Dm755 target/release/paru "${pkgdir}/usr/bin/paru"
+  install -Dm755 target/x86_64-unknown-linux-gnu/release/paru "${pkgdir}/usr/bin/paru"
   install -Dm644 paru.conf "${pkgdir}/etc/paru.conf"
 
   install -Dm644 man/paru.8 "$pkgdir/usr/share/man/man8/paru.8"

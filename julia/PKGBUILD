@@ -7,8 +7,7 @@
 # Contributor: devmotion <nospam-archlinux.org@devmotion.de>
 # Contributor: Valentin Churavy <v.churavy@gmail.com>
 
-# Julia-PGO PKGBUILD
-# Maintainer: Laio Seman <laio [at] ieee.org>
+# PGO Version: Laio Seman <laio@ieee.org>
 # using PGO-LTO script from https://github.com/JuliaLang/julia/pull/45641#issue-1268010204
 
 pkgname=julia

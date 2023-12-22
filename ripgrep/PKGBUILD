@@ -1,6 +1,8 @@
 # Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
 # Maintainer: Maxim Baz <archlinux at maximbaz dot com>
 # Contributor: Andrew Gallant <jamslam@gmail.com>
+# PGO Version: Laio Seman <laio@ieee.org>
+
 pkgname=ripgrep
 pkgver=14.0.3
 pkgrel=2

@@ -12,6 +12,7 @@ pkgbase = rav1e
 	depends = gcc-libs
 	depends = glibc
 	provides = librav1e.so
+	options = !lto
 	source = git+https://github.com/xiph/rav1e.git#tag=7c9db10494c2fffa98a572027d756e55bf754036
 	source = Cargo-rav1e-0.6.6.lock::https://github.com/xiph/rav1e/releases/download/v0.6.6/Cargo.lock
 	b2sums = SKIP

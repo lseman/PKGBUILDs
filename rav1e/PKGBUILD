@@ -1,0 +1,94 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Daniel Bermond <dbermond@archlinux.org>
+# Contributor: Chocobo1 <chocobo1@archlinux.net>
+
+pkgname=rav1e
+pkgver=0.6.6
+pkgrel=3
+pkgdesc='An AV1 encoder focused on speed and safety'
+arch=(x86_64)
+url=https://github.com/xiph/rav1e/
+license=(BSD)
+depends=(
+  gcc-libs
+  glibc
+)
+makedepends=(
+  cargo-c
+  git
+  nasm
+  rust
+)
+provides=(librav1e.so)
+_tag=7c9db10494c2fffa98a572027d756e55bf754036
+source=(
+  git+https://github.com/xiph/rav1e.git#tag=${_tag}
+  Cargo-rav1e-${pkgver}.lock::https://github.com/xiph/rav1e/releases/download/v${pkgver}/Cargo.lock
+)
+b2sums=('SKIP'
+        'c7d1f548e9cd194c98685827b178f923d7cb1b4e4c20c4cab4779bc1e56a59b84655731cd0e8e60dfb9d3a3dad6f9bd25aee903601f7a2c5214285584b1a3977')
+options=('!lto')
+
+pkgver() {
+  cd rav1e
+  git describe --tags | sed 's/^v//'
+}
+
+prepare() {
+  cp -f Cargo-rav1e-${pkgver}.lock rav1e/Cargo.lock
+  cargo fetch \
+    --locked \
+    --manifest-path rav1e/Cargo.toml
+}
+
+build() {
+  export MALLOC_CONF="thp:always,metadata_thp:always"
+  cd $srcdir/${pkgname}
+  cargo pgo build -- --manifest-path Cargo.toml --frozen \
+    --no-default-features \
+    --features binaries,asm,threading,signal_support
+  #cargo cbuild \
+  #    --release \
+  #    --frozen \
+  #    --no-default-features \
+  #    --features binaries,asm,threading,signal_support \
+  #    --prefix=/usr \
+  #    --manifest-path Cargo.toml
+  cargo pgo test  \
+    -- --frozen \
+    --no-default-features \
+    --features binaries,asm,threading,signal_support \
+    --manifest-path Cargo.toml
+
+  cargo pgo optimize build \
+    -- --frozen \
+    --no-default-features \
+    --features binaries,asm,threading,signal_support \
+    --manifest-path Cargo.toml
+
+  }
+
+package() {
+  cd $srcdir/${pkgname}
+
+  export FOLDER=${PWD}/target/x86_64-unknown-linux-gnu/release
+
+  install -Dm755 $FOLDER/rav1e $pkgdir/usr/bin/rav1e
+
+  install -Dm644 $FOLDER/librav1e.so.0.6.6 $pkgdir/usr/lib/librav1e.so.0.6.6
+
+  # Symlink
+  ln -s librav1e.so.0.6.6 $pkgdir/usr/lib/librav1e.so.0
+  ln -s librav1e.so.0.6.6 $pkgdir/usr/lib/librav1e.so
+
+  install -Dm644 $FOLDER/librav1e.a $pkgdir/usr/lib/librav1e.a
+
+  install -Dm644 $FOLDER/include/rav1e/rav1e.h $pkgdir/usr/include/rav1e.h
+
+  install -Dm664 LICENSE $pkgdir/usr/share/licenses/${pkgname}/LICENSE
+  install -Dm664 PATENTS $pkgdir/usr/share/licenses/${pkgname}/PATENTS
+
+
+}
+
+# vim: ts=2 sw=2 et:

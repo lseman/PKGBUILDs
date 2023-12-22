@@ -1,0 +1,20 @@
+pkgbase = rav1e
+	pkgdesc = An AV1 encoder focused on speed and safety
+	pkgver = 0.6.6
+	pkgrel = 3
+	url = https://github.com/xiph/rav1e/
+	arch = x86_64
+	license = BSD
+	makedepends = cargo-c
+	makedepends = git
+	makedepends = nasm
+	makedepends = rust
+	depends = gcc-libs
+	depends = glibc
+	provides = librav1e.so
+	source = git+https://github.com/xiph/rav1e.git#tag=7c9db10494c2fffa98a572027d756e55bf754036
+	source = Cargo-rav1e-0.6.6.lock::https://github.com/xiph/rav1e/releases/download/v0.6.6/Cargo.lock
+	b2sums = SKIP
+	b2sums = c7d1f548e9cd194c98685827b178f923d7cb1b4e4c20c4cab4779bc1e56a59b84655731cd0e8e60dfb9d3a3dad6f9bd25aee903601f7a2c5214285584b1a3977
+
+pkgname = rav1e

@@ -41,4 +41,3 @@ jobs:
       with:
         commit-message: update .cachy files with latest releases
         title: Update Packages with Latest Releases
-        branch: main

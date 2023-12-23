@@ -17,6 +17,10 @@ jobs:
 
       
     steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      
     - name: Find .cachy Files, Check and Update Latest Release
       env:
         GH_TOKEN: ${{ secrets.SEGREDINHO }}

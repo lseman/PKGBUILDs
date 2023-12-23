@@ -81,14 +81,11 @@ jobs:
 
     - name: Checkout Master Branch
       uses: actions/checkout@v4
-      with:
-        path: master
-        ref: master
 
     - name: Commit and Push Changes
       run: |
        export ROOT_DIR=/home/runner/work
-       cp -r $ROOT_DIR/to_commit/* $ROOT_DIR/CachyOS-PKGBUILDS/CachyOS-PKGBUILDS/master
+       cp -r $ROOT_DIR/to_commit/* $ROOT_DIR/CachyOS-PKGBUILDS/CachyOS-PKGBUILDS/
        cd $ROOT_DIR/CachyOS-PKGBUILDS/CachyOS-PKGBUILDS/master    
 
     - name: Create Pull Request

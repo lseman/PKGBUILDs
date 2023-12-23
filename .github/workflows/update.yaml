@@ -64,11 +64,11 @@ jobs:
         echo "ripgrep-pgo" > dirs_to_commit.txt
         echo $PWD
         cd CachyOS-PKGBUILDS
-        $echo $PWD
+        echo $PWD
         git checkout -b bump-packages
         # copy files in dirs_to_commit.txt to target repo
         while read line; do
-          cp ../PKGBUILDs/$line $line
+          cp ../$line $line
         done < ../dirs_to_commit.txt
         git add .
         git commit -m "Add updated files"

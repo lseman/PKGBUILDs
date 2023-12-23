@@ -69,13 +69,13 @@ jobs:
           echo "-----------------------------------"
         done
 
-        echo $PWD
+        export ROOT_DIR=$PWD
         ls
-        mkdir /home/runner/work/to_commit
+        mkdir -p $ROOT_DIR/to_commit
         
         echo "ripgrep-pgo" >> ../dirs_to_commit.txt
         while read line; do
-          cp -r /home/runner/work/CachyOS-PKGBUILDS/lseman/$line /home/runner/work/to_commit
+          cp -r $ROOT_DIR/lseman/$line $ROOT_DIR/to_commit
         done < ../dirs_to_commit.txt
 
     - name: Checkout Master Branch
@@ -86,7 +86,7 @@ jobs:
 
     - name: Commit and Push Changes
       run: |
-       cp -r /home/runner/work/to_commit/* /home/runner/work/CachyOS-PKGBUILDS/master
+       cp -r $ROOT_DIR/to_commit/* $ROOT_DIR/master
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5

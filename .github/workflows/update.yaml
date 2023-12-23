@@ -22,7 +22,7 @@ jobs:
         GH_TOKEN: ${{ secrets.SEGREDINHO }}
         GITHUB_TOKEN: ${{ secrets.SEGREDINHO }}
       run: |
-        
+        ls
         git checkout -b bump-packages
         touch ../dirs_to_commit.txt
         find . -name '*.cachy' -not -path '*/-git/*' | while read cachy; do

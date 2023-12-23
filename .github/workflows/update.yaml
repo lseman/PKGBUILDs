@@ -89,6 +89,7 @@ jobs:
       run: |
        export ROOT_DIR=/home/runner/work
        cp -r $ROOT_DIR/to_commit/* $ROOT_DIR/CachyOS-PKGBUILDS/CachyOS-PKGBUILDS/master
+       cd $ROOT_DIR/CachyOS-PKGBUILDS/CachyOS-PKGBUILDS/master    
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5

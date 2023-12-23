@@ -49,6 +49,8 @@ jobs:
           fi
           echo "-----------------------------------"
         done
+        cd ..
+        echo $PWD
 
     
     - name: Checkout Source Repository

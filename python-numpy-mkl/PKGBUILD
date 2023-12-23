@@ -12,7 +12,7 @@ pkgrel=1
 pkgdesc="Scientific tools for Python, compiled with Intel MKL"
 arch=('x86_64')
 license=('custom')
-url="http://www.numpy.org/"
+url="https://github.com/numpy/numpy.git"
 provides=("python-numpy=$pkgver")
 conflicts=('python-numpy')
 depends=('python' 'intel-oneapi-mkl')

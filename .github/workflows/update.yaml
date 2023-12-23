@@ -20,7 +20,7 @@ jobs:
 
     - name: Checkout Repository
       uses: actions/checkout@v4
-      
+
     - name: Find .cachy Files, Check and Update Latest Release
       env:
         GH_TOKEN: ${{ secrets.SEGREDINHO }}
@@ -76,6 +76,7 @@ jobs:
           cp -r /home/runner/work/CachyOS-PKGBUILDS/$line /home/runner/work/to_commit
         done < ../dirs_to_commit.txt
 
+        cd /home/runner/work/CachyOS-PKGBUILDS
         git checkout master
 
         cp -r /home/runner/work/to_commit/* /home/runner/work/CachyOS-PKGBUILDS

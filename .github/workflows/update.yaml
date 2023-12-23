@@ -60,7 +60,9 @@ jobs:
     - name: Copy Files and Commit Changes
       run: |
         echo "ripgrep-pgo" > dirs_to_commit.txt
+        echo $PWD
         cd CachyOS-PKGBUILDS
+        $echo $PWD
         git checkout -b bump-packages
         # copy files in dirs_to_commit.txt to target repo
         while read line; do

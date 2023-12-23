@@ -20,13 +20,8 @@ jobs:
 
     - name: Checkout Repository
       uses: actions/checkout@v4
-      with:
-        path: lseman
 
     - name: Find .cachy Files, Check and Update Latest Release
-      env:
-        GH_TOKEN: ${{ secrets.SEGREDINHO }}
-        GITHUB_TOKEN: ${{ secrets.SEGREDINHO }}
       run: |
         ls
         touch ../dirs_to_commit.txt

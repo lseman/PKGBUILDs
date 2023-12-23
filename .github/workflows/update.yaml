@@ -61,10 +61,9 @@ jobs:
 
         export ROOT_DIR=/home/runner/work
         echo $PWD
-        ls
+
         mkdir -p $ROOT_DIR/to_commit
         
-        echo "ripgrep-pgo" >> ../dirs_to_commit.txt
         while read line; do
           cp -r $ROOT_DIR/CachyOS-PKGBUILDS/CachyOS-PKGBUILDS/$line $ROOT_DIR/to_commit
         done < ../dirs_to_commit.txt

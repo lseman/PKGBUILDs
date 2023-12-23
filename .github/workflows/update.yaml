@@ -56,13 +56,10 @@ jobs:
       with:
         repository: 'CachyOS/CachyOS-PKGBUILDS'
         path: 'CachyOS-PKGBUILDS'
-    - name: Clone Target Repository
-      run: |
-        git clone https://github.com/CachyOS/CachyOS-PKGBUILDS.git
-        cd CachyOS-PKGBUILDS
 
     - name: Copy Files and Commit Changes
       run: |
+        cd CachyOS-PKGBUILDS
         git checkout -b bump-packages
         # copy files in dirs_to_commit.txt to target repo
         while read line; do

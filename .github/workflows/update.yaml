@@ -70,7 +70,7 @@ jobs:
         done
 
         echo $PWD
-
+        ls
         mkdir /home/runner/work/to_commit
         
         echo "ripgrep-pgo" >> ../dirs_to_commit.txt

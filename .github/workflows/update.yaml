@@ -69,7 +69,7 @@ jobs:
           echo "-----------------------------------"
         done
 
-        export ROOT_DIR=/home/runner/work/
+        export ROOT_DIR=/home/runner/work
         echo $PWD
         ls
         mkdir -p $ROOT_DIR/to_commit

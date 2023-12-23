@@ -12,7 +12,7 @@ jobs:
 
     - name: Find .cachy Files, Check and Update Latest Release
       run: |
-        find . -name '.cachy' | while read cachy; do
+        find . -name '*.cachy' -not -path '*/-git/*' | while read cachy; do
           echo "Processing $cachy"
           url=$(grep -oP 'url=\K.*' "$cachy")
           current_release=$(grep -oP 'release=\K.*' "$cachy")

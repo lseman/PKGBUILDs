@@ -1,0 +1,85 @@
+name: Update Cachy Files with Latest Releases
+
+on: [push, pull_request]
+
+  
+jobs:
+  update-cachy:
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      issues: 'write' #__This fixed the HttpError: Resource not accessible by integration
+      pull-requests: 'write'
+
+    runs-on: ubuntu-latest
+
+
+      
+    steps:
+    - name: Find .cachy Files, Check and Update Latest Release
+      env:
+        GH_TOKEN: ${{ secrets.SEGREDINHO }}
+        GITHUB_TOKEN: ${{ secrets.SEGREDINHO }}
+      run: |
+        
+        git checkout -b bump-packages
+        touch ../dirs_to_commit.txt
+        find . -name '*.cachy' -not -path '*/-git/*' | while read cachy; do
+          echo "Processing $cachy"
+          echo $PWD
+          url=$(grep -oP 'url=\K.*' "$cachy")
+          current_release=$(grep -oP 'release=\K.*' "$cachy")
+          echo "Configured URL: $url"
+          echo "Current Release: $current_release"
+
+          # Extract owner and repo from URL
+          owner_repo=$(echo $url | sed -n 's|.*github.com/\(.*\)\.git|\1|p')
+
+          # Use GitHub API to get the latest release  
+          latest_release=$(curl -s "https://api.github.com/repos/$owner_repo/releases/latest" | grep -oP '"tag_name": "\K(.*)(?=")')
+
+          # Remove leading 'v' if present 
+          latest_release_formatted=$(echo $latest_release | sed 's/^v//')
+
+          echo "Latest Release (formatted): $latest_release_formatted"
+
+          # Check if the current release is different from the latest release
+          if [ "$current_release" != "$latest_release_formatted" ]; then
+            echo "Updating .cachy file with latest release"
+            sed -i "s/release=$current_release/release=$latest_release_formatted/" "$cachy"
+            git add "$cachy"
+            # add dir to list of dirs to commit
+            $dirname >> ../dirs_to_commit.txt
+
+            # Check for PKGBUILD file in the same directory
+            pkgbuild_file="$(dirname "$cachy")/PKGBUILD"
+            if [ -f "$pkgbuild_file" ]; then
+              echo "Updating PKGBUILD file with latest release and resetting pkgrel to 1"
+              sed -i "s/pkgver=$current_release/pkgver=$latest_release_formatted/" "$pkgbuild_file"
+              sed -i "s/pkgrel=.*/pkgrel=1/" "$pkgbuild_file"
+              git add "$pkgbuild_file"
+            fi
+          fi
+          echo "-----------------------------------"
+        done
+
+        echo $PWD
+
+        mkdir /home/runner/work/to_commit
+
+        while read line; do
+          cp -r /home/runner/work/CachyOS-PKGBUILDS/$line /home/runner/work/to_commit
+        done < ../dirs_to_commit.txt
+
+        git checkout master
+
+        cp -r /home/runner/work/to_commit/* /home/runner/work/CachyOS-PKGBUILDS
+
+
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        commit-message: update .cachy files with latest releases
+        title: Update Packages with Latest Releases

@@ -76,7 +76,7 @@ jobs:
           cp -r /home/runner/work/CachyOS-PKGBUILDS/$line /home/runner/work/to_commit
         done < ../dirs_to_commit.txt
 
-        cd /home/runner/work/CachyOS-PKGBUILDS
+        cd /home/runner/work/CachyOS-PKGBUILDS/CachyOS-PKGBUILDS
         git checkout master
 
         cp -r /home/runner/work/to_commit/* /home/runner/work/CachyOS-PKGBUILDS

@@ -58,7 +58,7 @@ jobs:
             fi
             echo "-----------------------------------"
           done
-        done < pkgs_to_check.txt
+        done < CachyOS-PKGBUILDS/CachyOS-PKGBUILDS/pkgs_to_check.txt
         export ROOT_DIR=/home/runner/work
         echo $PWD
 

@@ -68,7 +68,7 @@ jobs:
         git checkout -b bump-packages
         # copy files in dirs_to_commit.txt to target repo
         while read line; do
-          cp ../$line $line
+          cp -r ../$line .
         done < ../dirs_to_commit.txt
         git add .
         git commit -m "Add updated files"

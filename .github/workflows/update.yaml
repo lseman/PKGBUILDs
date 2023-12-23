@@ -59,12 +59,13 @@ jobs:
 
     - name: Copy Files and Commit Changes
       run: |
+        echo "ripgrep-pgo" > dirs_to_commit.txt
         cd CachyOS-PKGBUILDS
         git checkout -b bump-packages
         # copy files in dirs_to_commit.txt to target repo
         while read line; do
           cp ../PKGBUILDs/$line $line
-        done < dirs_to_commit.txt
+        done < ../dirs_to_commit.txt
         git add .
         git commit -m "Add updated files"
       

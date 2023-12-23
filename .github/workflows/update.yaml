@@ -61,6 +61,8 @@ jobs:
 
     - name: Copy Files and Commit Changes
       run: |
+        git config --global user.email "laio@ieee.org"
+        git config --global user.name "Laio Seman"
         echo "ripgrep-pgo" > dirs_to_commit.txt
         echo $PWD
         cd CachyOS-PKGBUILDS

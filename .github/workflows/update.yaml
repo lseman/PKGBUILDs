@@ -35,6 +35,8 @@ jobs:
             echo "Updating .cachy file with latest release"
             sed -i "s/release=$current_release/release=$latest_release_formatted/" "$cachy"
             git add "$cachy"
+            # add dir to list of dirs to commit
+            $dirname >> ../dirs_to_commit.txt
 
             # Check for PKGBUILD file in the same directory
             pkgbuild_file="$(dirname "$cachy")/PKGBUILD"
@@ -48,8 +50,39 @@ jobs:
           echo "-----------------------------------"
         done
 
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v5
+    
+    - name: Checkout Source Repository
+      uses: actions/checkout@v4
       with:
-        commit-message: update .cachy files with latest releases
-        title: Update Packages with Latest Releases
+        repository: 'CachyOS/CachyOS-PKGBUILDS'
+        token: ${{ secrets.SOURCE_REPO_TOKEN }}
+  
+    - name: Clone Target Repository
+      run: |
+        git clone https://github.com/CachyOS/CachyOS-PKGBUILDS.git
+        cd CachyOS-PKGBUILDS
+
+    - name: Copy Files and Commit Changes
+      run: |
+        git checkout -b bump-packages
+        # copy files in dirs_to_commit.txt to target repo
+        while read line; do
+          cp ../PKGBUILDs/$line $line
+        done < ../dirs_to_commit.txt
+        git add .
+        git commit -m "Add updated files"
+      
+    - name: Push Changes to Target Repository
+      run: |
+        # push the changes to the new branch
+        git push origin HEAD:bump-packages
+      env:
+        GITHUB_TOKEN: ${{ secrets.TARGET_REPO_PAT }}
+
+    - name: Create Pull Request in Target Repository
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.TARGET_REPO_PAT }}
+        base: 'main' # Base branch in the target repo
+        title: 'Update Packages with Latest Releases'
+

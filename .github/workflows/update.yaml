@@ -75,7 +75,7 @@ jobs:
         
         echo "ripgrep-pgo" >> ../dirs_to_commit.txt
         while read line; do
-          cp -r /home/runner/work/CachyOS-PKGBUILDS/$line /home/runner/work/to_commit
+          cp -r /home/runner/work/CachyOS-PKGBUILDS/CachyOS-PKGBUILDS/$line /home/runner/work/to_commit
         done < ../dirs_to_commit.txt
 
     - name: Checkout Master Branch

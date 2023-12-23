@@ -1,0 +1,8 @@
+btop-git
+hyprland-git
+hyprpaper-git
+paru-git
+waybar-git
+wlogout-git
+xdg-desktop-portal-hyprland-git
+yay-git

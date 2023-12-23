@@ -76,7 +76,7 @@ jobs:
         
         echo "ripgrep-pgo" >> ../dirs_to_commit.txt
         while read line; do
-          cp -r $ROOT_DIR/CachyOS-PKGBUILDS/CachyOS-PKGBUILDS/$line $ROOT_DIR/to_commit
+          cp -r $ROOT_DIR/CachyOS-PKGBUILDS/CachyOS-PKGBUILDS/lseman/$line $ROOT_DIR/to_commit
         done < ../dirs_to_commit.txt
 
     - name: Checkout Master Branch

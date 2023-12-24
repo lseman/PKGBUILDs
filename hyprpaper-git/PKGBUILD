@@ -2,7 +2,7 @@
 
 _pkgname="hyprpaper"
 pkgname="${_pkgname}-git"
-pkgver=r122.c447f11
+pkgver=r123.f8cab3c
 pkgrel=1
 pkgdesc="A blazing fast wayland wallpaper utility with IPC controls."
 arch=(any)

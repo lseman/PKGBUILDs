@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
         sys.exit(0)
 
-    root_folder = "/data/git/CachyOS-PKGBUILDS/"
+    root_folder = "/data/git/PKGBUILDs/"
 
     # Get list of packages from gitupdate.txt
     packages = []

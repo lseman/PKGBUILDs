@@ -10,6 +10,12 @@ _staging=true
 pkgname=pacman
 pkgver=6.0.2
 _pkgver=6.0.2
+_sqlitever=$(curl -s 'https://archlinux.org/packages/search/json/?name=sqlite' | grep -oP '"pkgver":\s*"\K[^"]+' | head -n 1 | awk -F. '{ 
+    printf "%d%02d%02d", $1, $2, $3; 
+    if (NF == 4) { printf "%02d", $4 } 
+    else { printf "00" }
+}')
+
 pkgrel=22
 pkgdesc="A library-based package manager with dependency support. CachyOS fork."
 arch=('x86_64')
@@ -17,7 +23,7 @@ url="https://www.archlinux.org/pacman/"
 license=('GPL')
 depends=('bash' 'glibc' 'libarchive' 'curl' 'gpgme' 'pacman-mirrorlist'
          'gettext' 'gawk' 'coreutils' 'gnupg' 'grep' 'debugedit')
-makedepends=('meson' 'asciidoc' 'doxygen' 'git')
+makedepends=('meson' 'asciidoc' 'doxygen' 'git' 'curl' 'unzip')
 checkdepends=('python' 'fakechroot')
 optdepends=('perl-locale-gettext: translation support in makepkg-template')
 provides=('libalpm.so')
@@ -47,31 +53,30 @@ source=(
 sha256sums=('SKIP'
             '47f4ba578b1a6a3291cb65a6f60ab8c4871ae45bbe93da308a595a447ed9ad9d'
             '90f77e16fb4425cf62969203447aa2803f5eb550d6c4fe2dda2035656e25615d'
-            '21d9a0df2d168c3fda88ff7f88cae35de50ccbee48c9a3a17e57770e8c4615e8')
+            '476d22a607103ff47f68ac74de9d90185c050445463279a6b51a70586a4ccbce'
+            '7d01939360d7e132a5cfd328a64649e7a8786fb5225d8a192fb8a4260173df3d'
+            '73187473feb74509357e8fa6cb9fd67153b2d010d00aeb2fddb6ceeb18abaf27')
 
 if $_staging; then
     source+=(78cd453.patch)
-    source+=(libsqlite3.a)
     source+=(static_sqlite.patch)
-    noextract=("libsqlite3.a")
+    source+=("https://www.sqlite.org/2023/sqlite-src-${_sqlitever}.zip")
 fi
 
 prepare() {
-  cp libsqlite3.a "${pkgname}"
   cd "${pkgname}"
   # we backport way too often in pacman
   # lets at least make it more convenient
   local src
   for src in "${source[@]}"; do
-	  src="${src%%::*}"
-   	  src="${src##*/}"
-      [[ $src = *.patch ]] || continue
-      msg2 "Applying patch $src..."
-      patch -Np1 < "../$src"
+    src="${src%%::*}"
+    src="${src##*/}"
+    [[ $src = *.patch ]] || continue
+    msg2 "Applying patch $src..."
+    patch -Np1 < "../$src"
   done
 }
 build() {
-  cd "${pkgname}"
 
 if $_staging; then
   export CFLAGS+=" -fno-semantic-interposition -flto=thin"
@@ -79,7 +84,23 @@ if $_staging; then
   export RUSTFLAGS+=" -Cembed-bitcode -Clinker-plugin-lto -Clinker=clang -C link-arg=-flto=thin"
   export CC=clang
   export CXX=clang++
+
+  cd sqlite-src-${_sqlitever}
+  ./configure --prefix=/usr \
+	--enable-static \
+  --disable-shared \
+	--enable-fts3 \
+	--enable-fts4 \
+	--enable-fts5 \
+	--enable-rtree \
+	TCLLIBDIR=/usr/lib/sqlite$pkgver
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+  cp .libs/libsqlite3.a ../pacman/libsqlite3.a
+  cd ..
 fi
+
+  cd "${pkgname}"
 
   meson --prefix=/usr \
         --buildtype=plain \
@@ -124,3 +145,4 @@ fi
   install -m644 "$srcdir/pacman.conf" "$pkgdir/etc"
   install -m644 "$srcdir/makepkg.conf" "$pkgdir/etc"
 }
+

@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
     # Get list of packages from gitupdate.txt
     packages = []
-    with open("gitupdate.txt", "r") as file:
+    with open(root_folder + "gitupdate.txt", "r") as file:
         for line in file:
             packages.append(line.strip())    
     directories = [os.path.join(root_folder, pkg) for pkg in packages]

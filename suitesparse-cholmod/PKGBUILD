@@ -1,0 +1,40 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Ronald van Haren <ronald.archlinux.org>
+
+pkgname=suitesparse-cholmod
+pkgver=7.4.0
+pkgrel=1
+pkgdesc='A collection of sparse matrix libraries'
+url='http://faculty.cse.tamu.edu/davis/suitesparse.html'
+arch=(x86_64)
+conflicts=('suitesparse')
+depends=(blas
+         gcc-libs
+         glibc
+         gmp
+         lapack
+         mpfr)
+makedepends=(cmake
+             gcc-fortran)
+replaces=('suitesparse64<7.1.0')
+license=(GPL)
+source=(https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v7.4.0.tar.gz)
+sha256sums=('SKIP')
+options=('!lto')
+#get pkgver from git
+
+build() {
+   
+  source /opt/intel/oneapi/setvars.sh
+  export CC=clang
+  export CXX=clang++
+  cd SuiteSparse-$pkgver
+  cmake -DCMAKE_INSTALL_PREFIX=/usr \
+                 -DSUITESPARSE_ENABLE_PROJECTS=cholmod
+  make CHOLMOD_static -j$(nproc)
+}
+
+package() {
+  cd SuiteSparse-$pkgver
+  DESTDIR="$pkgdir" make install
+}

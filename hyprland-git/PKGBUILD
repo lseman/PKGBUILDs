@@ -3,7 +3,7 @@
 
 _pkgname="hyprland"
 pkgname="${_pkgname}-git"
-pkgver=0.33.1.r3883.94d6b2d2
+pkgver=0.33.1.r3885.46997a76
 pkgrel=1
 pkgdesc='a highly customizable dynamic tiling Wayland compositor'
 arch=(x86_64 aarch64)
@@ -73,7 +73,7 @@ build() {
   cd "${srcdir}/${_pkgname}"
   git submodule update --init
 
-  patch -Np1 < ../runtime-xwayland-disable.patch
+  #patch -Np1 < ../runtime-xwayland-disable.patch
 
   # With those flags set Hyprland does crash
   export CFLAGS=${CFLAGS/-Wp,-D_GLIBCXX_ASSERTIONS}

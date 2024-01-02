@@ -2,28 +2,13 @@
 
 _pkgname="hyprlang"
 pkgname="${_pkgname}-git"
-pkgver=v0.1.0.r7.g55e6ca0.git
+pkgver=0.1.0.r9.1db2a12
 pkgrel=1
 pkgdesc="The hypr configuration language."
 arch=(any)
 url="https://github.com/hyprwm/hyprlang"
-license=('BSD')
-depends=(
-	wayland
-	libglvnd
-	pango
-	libjpeg
-	libpng
-)
-makedepends=(
-	git
-	cmake
-	ninja
-	gcc
-	gdb
-	meson
-	wayland-protocols
-	xorgproto)
+license=('GPL')
+makedepends=('git' 'cmake')
 source=("${_pkgname}::git+https://github.com/hyprwm/hyprlang.git")
 conflicts=("${_pkgname}")
 provides=(hyprlang)
@@ -32,8 +17,7 @@ sha256sums=('SKIP')
 
 pkgver() {
   cd "$_pkgname"
-  printf "%s.%sgit" "$(git describe --tags --long | sed 's/\([^-]*-g\)/r\1/;s/-/./g')"
-   #  echo $(git describe --tags --long | sed -e 's/-\([0-9]*\)-g\([0-9a-f]*\)$/r\1.\2/' -e 's/-/./g')
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-\)g/r\1/;s/-/./g'
 }
 
 build() {

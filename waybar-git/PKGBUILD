@@ -66,12 +66,12 @@ build() {
     cd "${srcdir}/${pkgname}"
     rm -rf "${srcdir}/build"
     meson --prefix=/usr \
-          --buildtype=plain \
-          --auto-features=enabled \
-          -Dexperimental=true \
-          -Dcava=disabled \
-          -Dtests=disabled \
-          "${srcdir}/build"
+        --buildtype=plain \
+        --auto-features=enabled \
+        -Dexperimental=true \
+        -Dcava=disabled \
+        -Dtests=disabled \
+        "${srcdir}/build"
     ninja -C "${srcdir}/build"
 }
 

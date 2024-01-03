@@ -22,13 +22,13 @@ arch=('x86_64')
 url="https://www.archlinux.org/pacman/"
 license=('GPL')
 depends=('bash' 'glibc' 'libarchive' 'curl' 'gpgme' 'pacman-mirrorlist'
-         'gettext' 'gawk' 'coreutils' 'gnupg' 'grep' 'debugedit')
+    'gettext' 'gawk' 'coreutils' 'gnupg' 'grep' 'debugedit')
 makedepends=('meson' 'asciidoc' 'doxygen' 'git' 'curl' 'unzip')
 checkdepends=('python' 'fakechroot')
 optdepends=('perl-locale-gettext: translation support in makepkg-template')
 provides=('libalpm.so')
 backup=(etc/pacman.conf
-        etc/makepkg.conf)
+    etc/makepkg.conf)
 options=('strip')
 #validpgpkeys=('6645B0A8C7005E78DB1D7864F99FFE0FEAE999BD'  # Allan McRae <allan@archlinux.org>
 #              'B8151B117037781095514CA7BBDFFC92306B1121') # Andrew Gregory (pacman) <andrew@archlinux.org>
@@ -38,24 +38,24 @@ if $_staging; then
     makedepends+=('cmake' 'rust' 'clang')
 fi
 source=(
-#       https://sources.archlinux.org/other/pacman/$pkgname-$_pkgver.tar.xz{,.sig}
-        git+https://github.com/CachyOS/pacman.git#commit=${_commit}
-        "pacman.conf"
-        "makepkg.conf"
-#        pacman-always-create-directories-from-debugedit.patch::https://gitlab.archlinux.org/pacman/pacman/-/commit/efd0c24c07b86be014a4edb5a8ece021b87e3900.patch
-#        pacman-always-create-directories-from-debugedit-fixup.patch::https://gitlab.archlinux.org/pacman/pacman/-/commit/86981383a2f4380bda26311831be94cdc743649b.patch
-#        pacman-fix-unique-source-paths.patch::https://gitlab.archlinux.org/pacman/pacman/-/commit/478af273dfe24ded197ec54ae977ddc3719d74a0.patch
-#        pacman-strip-include-o-files-similar-to-kernel-modules.patch::https://gitlab.archlinux.org/pacman/pacman/-/commit/de11824527ec4e2561e161ac40a5714ec943543c.patch
-#        "0001-add-support-for-x86_64_v-2-3-4-autodetection.patch"
-#        "0001-Revert-pacman-key-Don-t-check-gpg-s-trustdb-after-ea.patch"
-#        "0001-add-information-about-origin-db.patch"
-        )
+    #       https://sources.archlinux.org/other/pacman/$pkgname-$_pkgver.tar.xz{,.sig}
+    git+https://github.com/CachyOS/pacman.git#commit=${_commit}
+    "pacman.conf"
+    "makepkg.conf"
+    #        pacman-always-create-directories-from-debugedit.patch::https://gitlab.archlinux.org/pacman/pacman/-/commit/efd0c24c07b86be014a4edb5a8ece021b87e3900.patch
+    #        pacman-always-create-directories-from-debugedit-fixup.patch::https://gitlab.archlinux.org/pacman/pacman/-/commit/86981383a2f4380bda26311831be94cdc743649b.patch
+    #        pacman-fix-unique-source-paths.patch::https://gitlab.archlinux.org/pacman/pacman/-/commit/478af273dfe24ded197ec54ae977ddc3719d74a0.patch
+    #        pacman-strip-include-o-files-similar-to-kernel-modules.patch::https://gitlab.archlinux.org/pacman/pacman/-/commit/de11824527ec4e2561e161ac40a5714ec943543c.patch
+    #        "0001-add-support-for-x86_64_v-2-3-4-autodetection.patch"
+    #        "0001-Revert-pacman-key-Don-t-check-gpg-s-trustdb-after-ea.patch"
+    #        "0001-add-information-about-origin-db.patch"
+)
 sha256sums=('SKIP'
-            '47f4ba578b1a6a3291cb65a6f60ab8c4871ae45bbe93da308a595a447ed9ad9d'
-            '90f77e16fb4425cf62969203447aa2803f5eb550d6c4fe2dda2035656e25615d'
-            '476d22a607103ff47f68ac74de9d90185c050445463279a6b51a70586a4ccbce'
-            '7d01939360d7e132a5cfd328a64649e7a8786fb5225d8a192fb8a4260173df3d'
-            '73187473feb74509357e8fa6cb9fd67153b2d010d00aeb2fddb6ceeb18abaf27')
+    '47f4ba578b1a6a3291cb65a6f60ab8c4871ae45bbe93da308a595a447ed9ad9d'
+    '90f77e16fb4425cf62969203447aa2803f5eb550d6c4fe2dda2035656e25615d'
+    '476d22a607103ff47f68ac74de9d90185c050445463279a6b51a70586a4ccbce'
+    '7d01939360d7e132a5cfd328a64649e7a8786fb5225d8a192fb8a4260173df3d'
+    '73187473feb74509357e8fa6cb9fd67153b2d010d00aeb2fddb6ceeb18abaf27')
 
 if $_staging; then
     source+=(78cd453.patch)
@@ -64,45 +64,45 @@ if $_staging; then
 fi
 
 prepare() {
-  cd "${pkgname}"
-  # we backport way too often in pacman
-  # lets at least make it more convenient
-  local src
-  for src in "${source[@]}"; do
-    src="${src%%::*}"
-    src="${src##*/}"
-    [[ $src = *.patch ]] || continue
-    msg2 "Applying patch $src..."
-    patch -Np1 < "../$src"
-  done
+    cd "${pkgname}"
+    # we backport way too often in pacman
+    # lets at least make it more convenient
+    local src
+    for src in "${source[@]}"; do
+        src="${src%%::*}"
+        src="${src##*/}"
+        [[ $src = *.patch ]] || continue
+        msg2 "Applying patch $src..."
+        patch -Np1 <"../$src"
+    done
 }
 build() {
 
-if $_staging; then
-  export CFLAGS+=" -fno-semantic-interposition -flto=thin"
-  export CXXLAGS+=" -fno-semantic-interposition -flto=thin"
-  export RUSTFLAGS+=" -Cembed-bitcode -Clinker-plugin-lto -Clinker=clang -C link-arg=-flto=thin"
-  export CC=clang
-  export CXX=clang++
+    if $_staging; then
+        export CFLAGS+=" -fno-semantic-interposition -flto=thin"
+        export CXXLAGS+=" -fno-semantic-interposition -flto=thin"
+        export RUSTFLAGS+=" -Cembed-bitcode -Clinker-plugin-lto -Clinker=clang -C link-arg=-flto=thin"
+        export CC=clang
+        export CXX=clang++
 
-  cd sqlite-src-${_sqlitever}
-  ./configure --prefix=/usr \
-	--enable-static \
-  --disable-shared \
-	--enable-fts3 \
-	--enable-fts4 \
-	--enable-fts5 \
-	--enable-rtree \
-	TCLLIBDIR=/usr/lib/sqlite$pkgver
-  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
-  make
-  cp .libs/libsqlite3.a ../pacman/libsqlite3.a
-  cd ..
-fi
+        cd sqlite-src-${_sqlitever}
+        ./configure --prefix=/usr \
+            --enable-static \
+            --disable-shared \
+            --enable-fts3 \
+            --enable-fts4 \
+            --enable-fts5 \
+            --enable-rtree \
+            TCLLIBDIR=/usr/lib/sqlite$pkgver
+        sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+        make
+        cp .libs/libsqlite3.a ../pacman/libsqlite3.a
+        cd ..
+    fi
 
-  cd "${pkgname}"
+    cd "${pkgname}"
 
-  meson --prefix=/usr \
+    meson --prefix=/usr \
         --buildtype=plain \
         -Ddoc=enabled \
         -Ddoxygen=enabled \
@@ -110,39 +110,38 @@ fi
         -Dldconfig=/usr/bin/ldconfig \
         build
 
-  meson compile -C build
+    meson compile -C build
 }
 
 check() {
-  cd "${pkgname}"
+    cd "${pkgname}"
 
-if $_staging; then
-  export CFLAGS+=" -fno-semantic-interposition -flto=thin"
-  export CXXLAGS+=" -fno-semantic-interposition -flto=thin"
-  export RUSTFLAGS+=" -Cembed-bitcode -Clinker-plugin-lto -Clinker=clang -C link-arg=-flto=thin"
-  export CC=clang
-  export CXX=clang++
-fi
+    if $_staging; then
+        export CFLAGS+=" -fno-semantic-interposition -flto=thin"
+        export CXXLAGS+=" -fno-semantic-interposition -flto=thin"
+        export RUSTFLAGS+=" -Cembed-bitcode -Clinker-plugin-lto -Clinker=clang -C link-arg=-flto=thin"
+        export CC=clang
+        export CXX=clang++
+    fi
 
-  meson test -C build
+    meson test -C build
 }
 
 package() {
-  cd "${pkgname}"
+    cd "${pkgname}"
 
-if $_staging; then
-  export CFLAGS+=" -fno-semantic-interposition -flto=thin"
-  export CXXLAGS+=" -fno-semantic-interposition -flto=thin"
-  export RUSTFLAGS+=" -Cembed-bitcode -Clinker-plugin-lto -Clinker=clang -C link-arg=-flto=thin"
-  export CC=clang
-  export CXX=clang++
-fi
+    if $_staging; then
+        export CFLAGS+=" -fno-semantic-interposition -flto=thin"
+        export CXXLAGS+=" -fno-semantic-interposition -flto=thin"
+        export RUSTFLAGS+=" -Cembed-bitcode -Clinker-plugin-lto -Clinker=clang -C link-arg=-flto=thin"
+        export CC=clang
+        export CXX=clang++
+    fi
 
-  DESTDIR="$pkgdir" meson install -C build
+    DESTDIR="$pkgdir" meson install -C build
 
-  # install Arch specific stuff
-  install -dm755 "$pkgdir/etc"
-  install -m644 "$srcdir/pacman.conf" "$pkgdir/etc"
-  install -m644 "$srcdir/makepkg.conf" "$pkgdir/etc"
+    # install Arch specific stuff
+    install -dm755 "$pkgdir/etc"
+    install -m644 "$srcdir/pacman.conf" "$pkgdir/etc"
+    install -m644 "$srcdir/makepkg.conf" "$pkgdir/etc"
 }
-

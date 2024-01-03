@@ -2,7 +2,7 @@
 
 _pkgname="hyprlang"
 pkgname="${_pkgname}-git"
-pkgver=0.1.0.r9.1db2a12
+pkgver=0.2.1.r0.6f62e2d
 pkgrel=1
 pkgdesc="The hypr configuration language."
 arch=(any)
@@ -16,17 +16,17 @@ sha256sums=('SKIP')
 #options=(!makeflags !buildflags !strip)
 
 pkgver() {
-  cd "$_pkgname"
-  git describe --long --tags | sed 's/^v//;s/\([^-]*-\)g/r\1/;s/-/./g'
+    cd "$_pkgname"
+    git describe --long --tags | sed 's/^v//;s/\([^-]*-\)g/r\1/;s/-/./g'
 }
 
 build() {
-	cd "${srcdir}/${_pkgname}"
-    cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=${pkgdir}/usr -S . -B ./build
+    cd "${srcdir}/${_pkgname}"
+	cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=${PKGDIR}/usr -S . -B build
     cmake --build ./build --config Release --target hyprlang
 }
 
 package() {
-	cd "${srcdir}/${_pkgname}"
-    cmake --install ./build
+    cd "${srcdir}/${_pkgname}"
+    DESTDIR="$pkgdir" cmake --install build
 }

@@ -21,24 +21,24 @@ source=('git+https://github.com/oracle-samples/bpftune')
 md5sums=('SKIP')
 
 pkgver() {
-	cd "$_pkgbase"
-	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+    cd "$_pkgbase"
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
 
 prepare() {
-	cd "$srcdir/$_pkgbase"
-	sed -i 's/\/lib64/\/lib/' include/bpftune/libbpftune.h
-	sed -i 's/\/lib64/\/lib/g' src/Makefile
-	sed -i 's/\/sbin/\/bin/g' src/Makefile
-	sed -i 's/\/sbin/\/bin/g' src/bpftune.service
+    cd "$srcdir/$_pkgbase"
+    sed -i 's/\/lib64/\/lib/' include/bpftune/libbpftune.h
+    sed -i 's/\/lib64/\/lib/g' src/Makefile
+    sed -i 's/\/sbin/\/bin/g' src/Makefile
+    sed -i 's/\/sbin/\/bin/g' src/bpftune.service
 }
 
 build() {
-	cd "$srcdir/$_pkgbase"
-	CC=clang make
+    cd "$srcdir/$_pkgbase"
+    CC=clang make
 }
 
 package() {
-	cd "$srcdir/$_pkgbase"
-	CC=clang make DESTDIR="$pkgdir" install
+    cd "$srcdir/$_pkgbase"
+    CC=clang make DESTDIR="$pkgdir" install
 }

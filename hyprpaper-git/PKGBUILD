@@ -2,28 +2,28 @@
 
 _pkgname="hyprpaper"
 pkgname="${_pkgname}-git"
-pkgver=0.5.0.r10.75270a9
+pkgver=0.6.0.r0.9e2a267
 pkgrel=1
 pkgdesc="A blazing fast wayland wallpaper utility with IPC controls."
 arch=(any)
 url="https://github.com/hyprwm/hyprpaper"
 license=('BSD')
 depends=(
-	wayland
-	libglvnd
-	pango
-	libjpeg
-	libpng
+    wayland
+    libglvnd
+    pango
+    libjpeg
+    libpng
 )
 makedepends=(
-	git
-	cmake
-	ninja
-	gcc
-	gdb
-	meson
-	wayland-protocols
-	xorgproto)
+    git
+    cmake
+    ninja
+    gcc
+    gdb
+    meson
+    wayland-protocols
+    xorgproto)
 source=("${_pkgname}::git+https://github.com/hyprwm/hyprpaper.git")
 conflicts=("${_pkgname}")
 provides=(hyprpaper)
@@ -31,17 +31,19 @@ sha256sums=('SKIP')
 options=(!makeflags !buildflags !strip)
 
 pkgver() {
-  cd "$_pkgname"
-  git describe --long --tags | sed 's/^v//;s/\([^-]*-\)g/r\1/;s/-/./g'
+    cd "$_pkgname"
+    git describe --long --tags | sed 's/^v//;s/\([^-]*-\)g/r\1/;s/-/./g'
 }
 
 build() {
-	cd "${srcdir}/${_pkgname}"
-	make all
+    cd "${srcdir}/${_pkgname}"
+
+    cmake -B build -S . -GNinja -DCMAKE_BUILD_TYPE=Release
+    cmake --build build
 }
 
 package() {
-	cd "${srcdir}/${_pkgname}"
-	install -Dm755 build/hyprpaper -t "${pkgdir}/usr/bin"
-	install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${_pkgname}"
+    cd "${srcdir}/${_pkgname}"
+    install -Dm755 build/hyprpaper -t "${pkgdir}/usr/bin"
+    install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${_pkgname}"
 }

@@ -1,0 +1,175 @@
+From ea9589606fe0b50f2119e2b90d61e6ecc6d389d6 Mon Sep 17 00:00:00 2001
+From: Mihai Fufezan <fufexan@protonmail.com>
+Date: Thu, 4 Jan 2024 01:15:46 +0200
+Subject: [PATCH] CMake: get rid of Makefile
+
+---
+ CMakeLists.txt                                | 32 +++++++++++++++----
+ Makefile                                      | 23 -------------
+ README.md                                     | 28 +++++++++++++---
+ .../xdg-desktop-portal-hyprland.service.in    |  2 +-
+ ...op.impl.portal.desktop.hyprland.service.in |  2 +-
+ 5 files changed, 52 insertions(+), 35 deletions(-)
+ delete mode 100644 Makefile
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b1e5fb9..377accb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -21,28 +21,41 @@ endif()
+ include_directories(
+   .
+   "protocols/"
+-  "subprojects/sdbus-cpp/include/"
+ )
+ 
++# configure
++set(LIBEXECDIR ${CMAKE_INSTALL_LIBEXECDIR})
++configure_file(org.freedesktop.impl.portal.desktop.hyprland.service.in org.freedesktop.impl.portal.desktop.hyprland.service @ONLY)
++configure_file(contrib/systemd/xdg-desktop-portal-hyprland.service.in contrib/systemd/xdg-desktop-portal-hyprland.service @ONLY)
++
+ set(CMAKE_CXX_STANDARD 23)
+ add_compile_options(-Wall -Wextra -Wno-unused-parameter -Wno-unused-value
+ 	-Wno-missing-field-initializers -Wno-narrowing -Wno-pointer-arith
+-	-fpermissive -Wno-address-of-temporary)
++	-fpermissive)
+ 
++# dependencies
+ message(STATUS "Checking deps...")
+ add_subdirectory(hyprland-share-picker)
+ 
+ find_package(Threads REQUIRED)
+-
+ find_package(PkgConfig REQUIRED)
+ pkg_check_modules(deps REQUIRED IMPORTED_TARGET wayland-client wayland-protocols libpipewire-0.3 libspa-0.2 libdrm gbm hyprlang>=0.2.0)
+ 
+ # check whether we can find sdbus-c++ through pkg-config
+ pkg_check_modules(SDBUS IMPORTED_TARGET sdbus-c++)
+ if(NOT SDBUS_FOUND)
++    include_directories("subprojects/sdbus-cpp/include/")
+     add_subdirectory(subprojects/sdbus-cpp)
+ endif()
+ 
++# same for hyprland-protocols
++pkg_check_modules(HYPRLAND_PROTOS IMPORTED_TARGET hyprland-protocols)
++if(HYPRLAND_PROTOS_FOUND)
++    set(HYPRLAND_PROTOCOLS "${HYPRLAND_PROTOS_PREFIX}/share/hyprland-protocols")
++else()
++    set(HYPRLAND_PROTOCOLS "subprojects/hyprland-protocols")
++endif()
++
+ file(GLOB_RECURSE SRCFILES CONFIGURE_DEPENDS "src/*.cpp")
+ add_executable(xdg-desktop-portal-hyprland ${SRCFILES})
+ target_link_libraries(xdg-desktop-portal-hyprland PRIVATE rt sdbus-c++ Threads::Threads PkgConfig::deps)
+@@ -79,7 +92,14 @@ endfunction()
+ 
+ protocol("protocols/wlr-foreign-toplevel-management-unstable-v1.xml" "wlr-foreign-toplevel-management-unstable-v1" true)
+ protocol("protocols/wlr-screencopy-unstable-v1.xml" "wlr-screencopy-unstable-v1" true)
+-protocol("subprojects/hyprland-protocols/protocols/hyprland-global-shortcuts-v1.xml" "hyprland-global-shortcuts-v1" true)
+-protocol("subprojects/hyprland-protocols/protocols/hyprland-toplevel-export-v1.xml" "hyprland-toplevel-export-v1" true)
++protocol("${HYPRLAND_PROTOCOLS}/protocols/hyprland-global-shortcuts-v1.xml" "hyprland-global-shortcuts-v1" true)
++protocol("${HYPRLAND_PROTOCOLS}/protocols/hyprland-toplevel-export-v1.xml" "hyprland-toplevel-export-v1" true)
+ protocol("unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml" "linux-dmabuf-unstable-v1" false)
+-##
++
++# Installation
++install(TARGETS hyprland-share-picker)
++install(TARGETS xdg-desktop-portal-hyprland DESTINATION ${CMAKE_INSTALL_LIBEXECDIR})
++
++install(FILES hyprland.portal DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/xdg-desktop-portal/portals")
++install(FILES ${CMAKE_BINARY_DIR}/org.freedesktop.impl.portal.desktop.hyprland.service DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/dbus-1/services")
++install(FILES ${CMAKE_BINARY_DIR}/contrib/systemd/xdg-desktop-portal-hyprland.service DESTINATION "${CMAKE_INSTALL_LIBDIR}/systemd/user")
+diff --git a/Makefile b/Makefile
+deleted file mode 100644
+index 8376032..0000000
+--- a/Makefile
++++ /dev/null
+@@ -1,23 +0,0 @@
+-PREFIX = /usr/local
+-LIBEXEC = /usr/lib
+-SHARE = /usr/share
+-
+-all:
+-	$(MAKE) release
+-
+-release:
+-	cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -H./ -B./build -G Ninja
+-	cmake --build ./build --config Release --target all -j$(nproc)
+-
+-debug:
+-	cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -H./ -B./build -G Ninja
+-	cmake --build ./build --config Debug --target all -j$(nproc)
+-
+-install:
+-	$(MAKE) release
+-	cp -f ./build/hyprland-share-picker/hyprland-share-picker ${PREFIX}/bin
+-	cp -f ./build/xdg-desktop-portal-hyprland ${LIBEXEC}/
+-	cp -f ./hyprland.portal ${SHARE}/xdg-desktop-portal/portals/
+-	sed "s|@libexecdir@|${LIBEXEC}|g" ./org.freedesktop.impl.portal.desktop.hyprland.service.in > ${SHARE}/dbus-1/services/org.freedesktop.impl.portal.desktop.hyprland
+-	sed "s|@libexecdir@|${LIBEXEC}|g" ./contrib/systemd/xdg-desktop-portal-hyprland.service.in > ${LIBEXEC}/systemd/user/xdg-desktop-portal-hyprland.service
+-	chmod 755 ${LIBEXEC}/xdg-desktop-portal-hyprland
+diff --git a/README.md b/README.md
+index d147e01..f902cfd 100644
+--- a/README.md
++++ b/README.md
+@@ -1,14 +1,34 @@
+ # xdg-desktop-portal-hyprland
+-An [XDG Desktop Portal](https://github.com/flatpak/xdg-desktop-portal) backend for Hyprland.
++
++An [XDG Desktop Portal](https://github.com/flatpak/xdg-desktop-portal) backend
++for Hyprland.
+ 
+ ## Installing
++
++First, make sure to install the required dependencies:
++
++```
++gbm
++hyprland-protocols
++hyprlang
++libdrm
++libpipewire-0.3
++libspa-0.2
++sdbus-cpp
++wayland-client
++wayland-protocols
++```
++
++Then run the build and install command:
++
+ ```sh
+ git clone --recursive https://github.com/hyprwm/xdg-desktop-portal-hyprland
+ cd xdg-desktop-portal-hyprland/
+-make all
+-sudo make install
++cmake -DCMAKE_INSTALL_LIBEXECDIR=/usr/lib -B build
++cmake --install /usr
+ ```
+ 
+ ## Running, FAQs, etc.
+-See [the Hyprland wiki](https://wiki.hyprland.org/Useful-Utilities/Hyprland-desktop-portal/)
+ 
++See
++[the Hyprland wiki](https://wiki.hyprland.org/Useful-Utilities/Hyprland-desktop-portal)
+diff --git a/contrib/systemd/xdg-desktop-portal-hyprland.service.in b/contrib/systemd/xdg-desktop-portal-hyprland.service.in
+index 8adcb5e..a2e3760 100644
+--- a/contrib/systemd/xdg-desktop-portal-hyprland.service.in
++++ b/contrib/systemd/xdg-desktop-portal-hyprland.service.in
+@@ -7,6 +7,6 @@ ConditionEnvironment=WAYLAND_DISPLAY
+ [Service]
+ Type=dbus
+ BusName=org.freedesktop.impl.portal.desktop.hyprland
+-ExecStart=@libexecdir@/xdg-desktop-portal-hyprland
++ExecStart=@LIBEXECDIR@/xdg-desktop-portal-hyprland
+ Restart=on-failure
+ Slice=session.slice
+diff --git a/org.freedesktop.impl.portal.desktop.hyprland.service.in b/org.freedesktop.impl.portal.desktop.hyprland.service.in
+index bb00b18..6f1c859 100644
+--- a/org.freedesktop.impl.portal.desktop.hyprland.service.in
++++ b/org.freedesktop.impl.portal.desktop.hyprland.service.in
+@@ -1,4 +1,4 @@
+ [D-BUS Service]
+ Name=org.freedesktop.impl.portal.desktop.hyprland
+-Exec=@libexecdir@/xdg-desktop-portal-hyprland
++Exec=@LIBEXECDIR@/xdg-desktop-portal-hyprland
+ SystemdService=xdg-desktop-portal-hyprland.service

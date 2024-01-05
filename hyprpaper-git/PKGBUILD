@@ -37,8 +37,11 @@ pkgver() {
 
 build() {
     cd "${srcdir}/${_pkgname}"
+    cmake -B build -S . \
+        -GNinja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -D CMAKE_INSTALL_PREFIX=/usr
     make protocols
-    cmake -B build -S . -GNinja -DCMAKE_BUILD_TYPE=Release
     cmake --build build
 }
 

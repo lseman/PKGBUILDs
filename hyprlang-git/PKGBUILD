@@ -11,7 +11,7 @@ license=('GPL')
 makedepends=('git' 'cmake')
 source=("${_pkgname}::git+https://github.com/hyprwm/hyprlang.git")
 conflicts=("${_pkgname}")
-provides=(hyprlang)
+provides=("lib${_pkgname}.so")
 sha256sums=('SKIP')
 #options=(!makeflags !buildflags !strip)
 
@@ -21,12 +21,17 @@ pkgver() {
 }
 
 build() {
-    cd "${srcdir}/${_pkgname}"
-    cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=${PKGDIR}/usr -S . -B build
-    cmake --build ./build --config Release --target hyprlang
+    cd $srcdir/$_pkgname
+    cmake -B build \
+        -D CMAKE_INSTALL_PREFIX=/usr \
+        -D CMAKE_BUILD_TYPE=Release
+    cmake --build build
 }
 
 package() {
-    cd "${srcdir}/${_pkgname}"
+    cd $srcdir/$_pkgname
+
     DESTDIR="$pkgdir" cmake --install build
+    install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+
 }

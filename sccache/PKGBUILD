@@ -10,43 +10,43 @@ arch=(x86_64)
 url=https://github.com/mozilla/sccache
 license=(Apache)
 depends=(
-  gcc-libs
-  glibc
-  openssl
-  zlib
-  zstd
+    gcc-libs
+    glibc
+    openssl
+    zlib
+    zstd
 )
 makedepends=(
-  git
-  rust
+    git
+    rust
 )
 optdepends=(
-  'memcached: Memcached support'
-  'redis: Redis support'
+    'memcached: Memcached support'
+    'redis: Redis support'
 )
 _tag=fb0ab0c42268c2ea9bbc1ec9bc848330cfdf08ec
 source=(git+https://github.com/mozilla/sccache.git#tag=${_tag})
 b2sums=(SKIP)
 
 pkgver() {
-  cd sccache
-  git describe --tags | sed 's/^v//'
+    cd sccache
+    git describe --tags | sed 's/^v//'
 }
 
 prepare() {
-  cargo fetch \
-    --locked \
-    --manifest-path sccache/Cargo.toml
+    cargo fetch \
+        --locked \
+        --manifest-path sccache/Cargo.toml
 }
 
 build() {
-  export CFLAGS+=' -ffat-lto-objects'
-  export LDFLAGS+=' -lzstd'
-  cargo build \
-    --release \
-    --frozen \
-    --manifest-path sccache/Cargo.toml \
-    --features all,dist-server,native-zlib
+    export CFLAGS+=' -ffat-lto-objects'
+    export LDFLAGS+=' -lzstd'
+    cargo build \
+        --release \
+        --frozen \
+        --manifest-path sccache/Cargo.toml \
+        --features all,dist-server,native-zlib
 }
 
 #check() {
@@ -58,15 +58,15 @@ build() {
 #}
 
 package() {
-  export CFLAGS+=' -ffat-lto-objects'
-  export LDFLAGS+=' -lzstd'
-  cargo install \
-    --frozen \
-    --offline \
-    --no-track \
-    --path sccache \
-    --root "${pkgdir}"/usr \
-    --features all,dist-server,native-zlib
+    export CFLAGS+=' -ffat-lto-objects'
+    export LDFLAGS+=' -lzstd'
+    cargo install \
+        --frozen \
+        --offline \
+        --no-track \
+        --path sccache \
+        --root "${pkgdir}"/usr \
+        --features all,dist-server,native-zlib
 }
 
 # vim: ts=2 sw=2 et:

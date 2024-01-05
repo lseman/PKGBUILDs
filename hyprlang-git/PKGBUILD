@@ -2,7 +2,7 @@
 
 _pkgname="hyprlang"
 pkgname="${_pkgname}-git"
-pkgver=0.2.1.r0.6f62e2d
+pkgver=0.2.1.r3.4c28464
 pkgrel=1
 pkgdesc="The hypr configuration language."
 arch=(any)
@@ -22,7 +22,7 @@ pkgver() {
 
 build() {
     cd "${srcdir}/${_pkgname}"
-	cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=${PKGDIR}/usr -S . -B build
+    cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=${PKGDIR}/usr -S . -B build
     cmake --build ./build --config Release --target hyprlang
 }
 

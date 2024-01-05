@@ -2,7 +2,7 @@
 
 _pkgname="hyprpaper"
 pkgname="${_pkgname}-git"
-pkgver=0.6.0.r0.9e2a267
+pkgver=0.6.0.r3.43b6e9d
 pkgrel=1
 pkgdesc="A blazing fast wayland wallpaper utility with IPC controls."
 arch=(any)
@@ -28,7 +28,7 @@ source=("${_pkgname}::git+https://github.com/hyprwm/hyprpaper.git")
 conflicts=("${_pkgname}")
 provides=(hyprpaper)
 sha256sums=('SKIP')
-options=(!makeflags !buildflags !strip)
+options=(!strip)
 
 pkgver() {
     cd "$_pkgname"
@@ -37,7 +37,7 @@ pkgver() {
 
 build() {
     cd "${srcdir}/${_pkgname}"
-
+    make protocols
     cmake -B build -S . -GNinja -DCMAKE_BUILD_TYPE=Release
     cmake --build build
 }

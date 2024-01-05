@@ -1,5 +1,6 @@
 # Maintainer: Pierre Schmitz <pierre@archlinux.de>
-
+# PGO Version: Laio Seman <laio [at] ieee.org>
+#
 pkgbase=zsh
 pkgname=('zsh')
 pkgver=5.9

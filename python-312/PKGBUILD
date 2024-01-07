@@ -3,7 +3,7 @@
 
 pkgname=python312
 pkgver=3.12.1
-pkgrel=99
+pkgrel=3
 _pybasever=3.12
 _pymajver=3
 pkgdesc="Major release 3.12 of the Python high-level programming language"
@@ -58,10 +58,10 @@ build() {
         --with-dbmliborder=gdbm:ndbm \
         --with-system-libmpdec \
         --enable-loadable-sqlite-extensions \
-        --without-ensurepip \
+        --with-ensurepip \
         --with-tzpath=/usr/share/zoneinfo \
-        --enable-optimizations
-    --enable-bolt
+        --enable-optimizations \
+        --enable-bolt
 
     make EXTRA_CFLAGS="$CFLAGS"
 }

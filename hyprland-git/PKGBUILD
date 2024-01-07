@@ -3,7 +3,7 @@
 
 _pkgname="hyprland"
 pkgname="${_pkgname}-git"
-pkgver=0.34.0.r25.7e033e48
+pkgver=0.34.0.r31.d7d333d1
 pkgrel=1
 pkgdesc='a highly customizable dynamic tiling Wayland compositor'
 arch=(x86_64 aarch64)

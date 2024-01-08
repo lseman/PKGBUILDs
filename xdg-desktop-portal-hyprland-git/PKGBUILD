@@ -52,14 +52,6 @@ build() {
     rm -rf hyprland-protocols sdbus-cpp
     ln -sfT "$srcdir/hyprland-protocols-$_protocolver" hyprland-protocols
     cd ..
-    #export LDFLAGS="$LDFLAGS -lhyprlang"
-    export CFLAGS="$CFLAGS -I/usr/include/libdrm/"
-    export CXXFLAGS="$CXXFLAGS -I/usr/include/libdrm/"
-    #git submodule update --init
-    #meson build --prefix=/usr
-    #ninja -C build
-    #cd hyprland-share-picker && make all && cd ..
-    #sed -i '$ a include_directories(/path/to/drm/include)' CMakeLists.txt
 
     cmake -B build \
         -D CMAKE_INSTALL_PREFIX=/usr \

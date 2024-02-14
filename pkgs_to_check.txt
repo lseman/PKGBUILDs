@@ -1,4 +1,0 @@
-paru-pgo
-rav1e-pgo
-ripgrep-pgo
-zstd-pgo

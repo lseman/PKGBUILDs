@@ -1,4 +1,3 @@
-btop-git
 hyprland-git
 hyprpaper-git
 waybar-git

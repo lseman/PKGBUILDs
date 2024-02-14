@@ -2,6 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=cmake,archlinuxpackages
 
 */*/**
+*/.git
 
 ### ArchLinuxPackages ###
 *.tar
@@ -14,6 +15,10 @@
 *.log
 *.log.*
 *.sig
+
+#
+linux/
+linux-*
 
 pkg/
 src/

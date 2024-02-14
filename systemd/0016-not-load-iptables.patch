@@ -1,0 +1,22 @@
+From c02c742c26edc93400f7dfb9509c6fa6c3fea4e9 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Sun, 19 Jun 2016 00:51:22 +0000
+Subject: [PATCH 16/38] not load iptables
+
+---
+ src/core/kmod-setup.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+--- systemd-stable-255.2/src/core/kmod-setup.c~	2023-12-24 09:00:51.000000000 +0000
++++ systemd-stable-255.2/src/core/kmod-setup.c	2024-01-02 15:38:06.349377373 +0000
+@@ -132,10 +132,6 @@
+                 /* This should never be a module */
+                 { "unix",                       "/proc/net/unix",            true,  true,  NULL               },
+ 
+-#if HAVE_LIBIPTC
+-                /* netfilter is needed by networkd, nspawn among others, and cannot be autoloaded */
+-                { "ip_tables",                  "/proc/net/ip_tables_names", false, false, NULL               },
+-#endif
+                 /* virtio_rng would be loaded by udev later, but real entropy might be needed very early */
+                 { "virtio_rng",                 NULL,                        false, false, has_virtio_rng     },
+ 
